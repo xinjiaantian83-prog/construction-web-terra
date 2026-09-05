@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const dist = resolve(root, 'dist');
-const required = ['index.html', 'styles.css', 'script.js', 'assets/hero-genba-home.png', 'CNAME', '.nojekyll'];
+const required = ['index.html', 'terms/index.html', 'privacy/index.html', 'styles.css', 'script.js', 'assets/hero-genba-home.png', 'CNAME', '.nojekyll'];
 
 for (const file of required) {
   if (!existsSync(resolve(root, file))) throw new Error(`Missing required file: ${file}`);
@@ -16,7 +16,7 @@ for (const image of html.matchAll(/(?:src|data-full)="(assets\/[^\"]+)"/g)) {
 
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
-for (const file of ['index.html', 'styles.css', 'script.js', 'assets', 'CNAME', '.nojekyll']) {
+for (const file of ['index.html', 'terms', 'privacy', 'styles.css', 'script.js', 'assets', 'CNAME', '.nojekyll']) {
   cpSync(resolve(root, file), resolve(dist, file), { recursive: true });
 }
 

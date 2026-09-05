@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://construction-web-terra.com/sitemap.xml

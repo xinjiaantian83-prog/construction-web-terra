@@ -1,0 +1,8 @@
+{
+  "name": "construction-web-terra",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  }
+}

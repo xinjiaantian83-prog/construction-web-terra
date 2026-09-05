@@ -1,3 +1,30 @@
+const GA4_EVENT_NAMES=new Set(['click_line','click_contact','click_plan','click_portfolio']);
+const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
+
+if(ga4MeasurementId){
+  window.dataLayer=window.dataLayer||[];
+  window.gtag=function(){window.dataLayer.push(arguments)};
+  window.gtag('js',new Date());
+  window.gtag('config',ga4MeasurementId);
+
+  const ga4Script=document.createElement('script');
+  ga4Script.async=true;
+  ga4Script.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4MeasurementId)}`;
+  document.head.appendChild(ga4Script);
+}
+
+document.addEventListener('click',event=>{
+  const target=event.target.closest('[data-ga-event]');
+  if(!target||!window.gtag)return;
+  const eventName=target.dataset.gaEvent;
+  if(!GA4_EVENT_NAMES.has(eventName))return;
+  window.gtag('event',eventName,{
+    link_url:target.href||undefined,
+    link_text:target.textContent.trim().replace(/\s+/g,' '),
+    placement:target.dataset.gaLabel||undefined,
+  });
+});
+
 const header=document.querySelector('.site-header');
 const menu=document.querySelector('.menu-button');
 menu?.addEventListener('click',()=>{const open=header.classList.toggle('menu-open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'メニューを閉じる':'メニューを開く')});

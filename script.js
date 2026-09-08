@@ -1,4 +1,4 @@
-const GA4_EVENT_NAMES=new Set(['click_line','click_contact','click_plan','click_portfolio']);
+const GA4_EVENT_NAMES=new Set(['click_line','click_contact','click_plan','click_portfolio','click_phone','click_email']);
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
 
 if(ga4MeasurementId){

@@ -45,6 +45,7 @@ document.querySelector('.add-photo')?.addEventListener('click',e=>{const button=
 
 const modal=document.querySelector('#templateModal');
 const modalImage=modal?.querySelector('img');
+const modalPlaceholder='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 let lastTemplateButton=null;
 document.querySelectorAll('.template-open').forEach(button=>button.addEventListener('click',()=>{
   lastTemplateButton=button;
@@ -52,10 +53,11 @@ document.querySelectorAll('.template-open').forEach(button=>button.addEventListe
   modalImage.alt=button.querySelector('img').alt;
   modal.classList.add('open');
   modal.setAttribute('aria-hidden','false');
+  modal.removeAttribute('inert');
   document.body.classList.add('modal-open');
   modal.querySelector('.modal-close').focus();
 }));
-function closeModal(){modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true');document.body.classList.remove('modal-open');if(modalImage)modalImage.src='';lastTemplateButton?.focus()}
+function closeModal(){modal?.classList.remove('open');modal?.setAttribute('aria-hidden','true');modal?.setAttribute('inert','');document.body.classList.remove('modal-open');if(modalImage)modalImage.src=modalPlaceholder;lastTemplateButton?.focus()}
 modal?.querySelector('.modal-close').addEventListener('click',closeModal);
 modal?.addEventListener('click',e=>{if(e.target===modal)closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal?.classList.contains('open'))closeModal()});

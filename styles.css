@@ -11,6 +11,7 @@ h2{font-size:clamp(34px,4vw,55px);line-height:1.38;letter-spacing:-.035em;margin
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button{transition:none}}
 
 .hero-copy span,.hero-copy small{display:block}.hero-copy span+span{margin-top:2px}.hero-copy small{margin-top:7px;color:#aebbb5;font-size:11px;line-height:1.7}
+.about-blog{margin-top:24px;padding-top:20px;border-top:1px solid #40564d}.about-blog small{display:block;color:#aebbb5;font-size:11px;line-height:1.8}.about-blog a{display:inline-flex;gap:12px;margin-top:10px;color:var(--lime);font-size:12px;font-weight:800;border-bottom:1px solid #d9ee4870;padding-bottom:3px}
 .reality-section{padding:58px 0;background:#fafaf7}.reality-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}.reality-section h2{font-size:clamp(25px,2.8vw,39px);line-height:1.62}.reality-section h2 em{font-style:normal;color:#66746d}.reality-copy p{margin:0 0 12px;color:#5e6b65;font-size:14px;line-height:1.9}.reality-copy strong{color:var(--ink)}.reality-copy a{display:inline-flex;align-items:center;gap:18px;margin-top:5px;padding-bottom:3px;border-bottom:1px solid #89958f;font-size:12px;font-weight:700}.reality-copy a span{color:#718713}
 
 /* Compressed top-page structure and real template gallery */

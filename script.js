@@ -1,4 +1,4 @@
-const GA4_EVENT_NAMES=new Set(['click_line','click_contact','click_plan','click_portfolio','click_phone','click_email']);
+const GA4_EVENT_NAMES=new Set(['click_line','click_contact','click_plan','click_portfolio','click_phone','click_email','click_hp_service']);
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
 
 if(ga4MeasurementId){
@@ -18,11 +18,14 @@ document.addEventListener('click',event=>{
   if(!target||!window.gtag)return;
   const eventName=target.dataset.gaEvent;
   if(!GA4_EVENT_NAMES.has(eventName))return;
-  window.gtag('event',eventName,{
+  const eventParams={
     link_url:target.href||undefined,
     link_text:target.textContent.trim().replace(/\s+/g,' '),
     placement:target.dataset.gaLabel||undefined,
-  });
+  };
+  window.gtag('event',eventName,eventParams);
+  const alsoEventName=target.dataset.gaAlsoEvent;
+  if(GA4_EVENT_NAMES.has(alsoEventName))window.gtag('event',alsoEventName,eventParams);
 });
 
 const header=document.querySelector('.site-header');

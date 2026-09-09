@@ -1,4 +1,4 @@
-const GA4_EVENT_NAMES=new Set(['click_line','click_contact','click_plan','click_portfolio','click_phone','click_email','click_hp_service']);
+const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_line','click_phone','click_email']);
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
 
 if(ga4MeasurementId){
@@ -24,9 +24,28 @@ document.addEventListener('click',event=>{
     placement:target.dataset.gaLabel||undefined,
   };
   window.gtag('event',eventName,eventParams);
-  const alsoEventName=target.dataset.gaAlsoEvent;
-  if(GA4_EVENT_NAMES.has(alsoEventName))window.gtag('event',alsoEventName,eventParams);
 });
+
+const priceSection=document.querySelector('#price');
+if(priceSection){
+  let priceViewed=false;
+  let priceObserver;
+  const trackPriceView=()=>{
+    if(priceViewed||!window.gtag)return;
+    const rect=priceSection.getBoundingClientRect();
+    if(rect.top>window.innerHeight*.75||rect.bottom<0)return;
+    priceViewed=true;
+    window.gtag('event','view_price',{placement:'price',section_id:'price'});
+    priceObserver?.disconnect();
+    window.removeEventListener('scroll',trackPriceView);
+  };
+  if('IntersectionObserver' in window){
+    priceObserver=new IntersectionObserver(trackPriceView,{threshold:0});
+    priceObserver.observe(priceSection);
+  }
+  window.addEventListener('scroll',trackPriceView,{passive:true});
+  requestAnimationFrame(trackPriceView);
+}
 
 const header=document.querySelector('.site-header');
 const menu=document.querySelector('.menu-button');

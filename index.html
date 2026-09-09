@@ -76,6 +76,7 @@
           {"@type":"Question","name":"パソコンを持っていなくても本当に大丈夫ですか？","acceptedAnswer":{"@type":"Answer","text":"はい。打ち合わせ、内容確認、公開後の写真更新までスマートフォンで完結できるように進めます。"}},
           {"@type":"Question","name":"文章を用意できません。","acceptedAnswer":{"@type":"Answer","text":"問題ありません。簡単な質問への回答をもとに、サイト構成と文章はこちらからご提案します。"}},
           {"@type":"Question","name":"制作後、自分で更新できますか？","acceptedAnswer":{"@type":"Answer","text":"施工写真の追加・削除・並び替え・カテゴリ変更・公開設定をスマートフォンから行えます。"}},
+          {"@type":"Question","name":"施工写真が1枚もありませんが、依頼できますか？","acceptedAnswer":{"@type":"Answer","text":"はい。施工写真がゼロでも制作できます。使える実写素材がない場合は、必要な画像をこちらで何点かご用意します。実際の施工実績が増えてきたら、あとからご自身で追加・差し替えできます。"}},
           {"@type":"Question","name":"なぜ月8件までなのですか？","acceptedAnswer":{"@type":"Answer","text":"ヒアリング、構成の判断、ラフ案の確認、公開前の最終チェックなど、品質に関わる部分は運営者自身が確認しています。テンプレートを当てはめて大量制作するサービスではないため、現在は品質を維持できる範囲として月8件を上限にしています。"}},
           {"@type":"Question","name":"公開後の維持費はいくらですか？","acceptedAnswer":{"@type":"Answer","text":"更新機能を使わない静的な構成なら、月額サーバー費0円で運用できる場合があります。独自ドメインの更新費は、.comで年2,000円前後が目安です。スマホ更新機能を含む構成は保存容量や運用方法で変わるため、ご契約前に必要な年額を明確にご案内します。金額は契約会社や時期により変動します。"}},
           {"@type":"Question","name":"デザインや構成を自分で決める必要はありますか？","acceptedAnswer":{"@type":"Answer","text":"いいえ。業種、仕事内容、写真、好みの雰囲気を伺い、こちらから複数の方向をご提案します。ラフ案をスマホで見てから、気になる部分をご相談いただけます。"}},
@@ -134,13 +135,24 @@
               <div class="project-title"><small>施工事例</small><b>門まわり改修</b></div>
               <p class="drag-guide">⠿ 写真をドラッグして並び替え</p>
               <div class="photo-grid" id="sortablePhotos">
-                <div class="demo-photo p1" draggable="true"><span>1</span></div><div class="demo-photo p2" draggable="true"><span>2</span></div><div class="demo-photo p3" draggable="true"><span>3</span></div><div class="demo-photo p4" draggable="true"><span>4</span></div>
+                <div class="demo-photo p1" draggable="true"><span>1</span></div><div class="demo-photo p2 image-example" draggable="true"><span>2</span><small class="image-note">施工イメージ</small></div><div class="demo-photo p3" draggable="true"><span>3</span></div><div class="demo-photo p4" draggable="true"><span>4</span></div>
               </div>
               <button class="add-photo" type="button">＋ 写真を追加</button>
+              <button class="replace-photo-demo" type="button">画像差し替え時の確認を試す</button>
               <label class="publish-row"><span><b>ホームページに公開</b><small id="publishStatus">公開中</small></span><input id="publishToggle" type="checkbox" checked><i></i></label>
+            </div>
+            <div class="image-confirm" id="imageConfirm" role="dialog" aria-modal="true" aria-labelledby="imageConfirmTitle" hidden>
+              <div><small>画像差し替え時の確認</small><strong id="imageConfirmTitle">この画像はご自身の施工実績で、掲載可能な写真ですか？</strong><button type="button" data-image-answer="work">はい、実績写真です</button><button type="button" data-image-answer="image">いいえ、イメージ画像として使います</button></div>
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="photo-start section" aria-labelledby="photoStartTitle">
+      <div class="wrap photo-start-grid">
+        <div><div class="eyebrow"><i></i>START WITHOUT PHOTOS</div><h2 id="photoStartTitle">施工写真がゼロでも、<br>始められます。</h2><p>下請け仕事が中心だった方や、独立したばかりの方は、自社の施工写真をまだ持っていないこともあります。</p><p>施工写真や人物写真がない場合でも、必要な画像はこちらで何点かご用意しますので、その中からお選びいただけます。</p></div>
+        <div class="photo-start-card"><ol><li><b>01</b><span>実際の施工写真</span></li><li><b>02</b><span>作業風景・スタッフ</span></li><li><b>03</b><span>後ろ姿・手元・道具・車両</span></li><li><b>04</b><span>こちらで用意するイメージ画像</span></li></ol><p>実績が増えたら、スマホからご自身の写真へ追加・差し替えできます。</p><small>イメージ画像には「施工イメージ」等を表示し、実際の施工実績と誤認されないようにします。</small></div>
       </div>
     </section>
 
@@ -181,6 +193,7 @@
       <details><summary>パソコンを持っていなくても本当に大丈夫ですか？<i>＋</i></summary><p>はい。打ち合わせ、内容確認、公開後の写真更新までスマートフォンで完結できるように進めます。</p></details>
       <details><summary>文章を用意できません。<i>＋</i></summary><p>問題ありません。簡単な質問への回答をもとに、サイト構成と文章はこちらからご提案します。</p></details>
       <details><summary>制作後、自分で更新できますか？<i>＋</i></summary><p>施工写真の追加・削除・並び替え・カテゴリ変更・公開設定をスマートフォンから行えます。</p></details>
+      <details><summary>施工写真が1枚もありませんが、依頼できますか？<i>＋</i></summary><p>はい。施工写真がゼロでも制作できます。使える実写素材がない場合は、必要な画像をこちらで何点かご用意します。実際の施工実績が増えてきたら、あとからご自身で追加・差し替えできます。</p></details>
       <details><summary>なぜ月8件までなのですか？<i>＋</i></summary><p>ヒアリング、構成の判断、ラフ案の確認、公開前の最終チェックなど、品質に関わる部分は運営者自身が確認しています。テンプレートを当てはめて大量制作するサービスではないため、現在は品質を維持できる範囲として月8件を上限にしています。</p></details>
       <details><summary>公開後の維持費はいくらですか？<i>＋</i></summary><p>更新機能を使わない静的な構成なら、月額サーバー費0円で運用できる場合があります。独自ドメインの更新費は、.comで年2,000円前後が目安です。スマホ更新機能を含む構成は保存容量や運用方法で変わるため、ご契約前に必要な年額を明確にご案内します。金額は契約会社や時期により変動します。</p></details>
       <details><summary>デザインや構成を自分で決める必要はありますか？<i>＋</i></summary><p>いいえ。業種、仕事内容、写真、好みの雰囲気を伺い、こちらから複数の方向をご提案します。ラフ案をスマホで見てから、気になる部分をご相談いただけます。</p></details>

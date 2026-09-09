@@ -46,6 +46,21 @@ toggle?.addEventListener('change',()=>{status.textContent=toggle.checked?'公開
 document.querySelector('.save-demo')?.addEventListener('click',e=>{const button=e.currentTarget;const original=button.textContent;button.textContent='保存済み ✓';setTimeout(()=>button.textContent=original,1600)});
 document.querySelector('.add-photo')?.addEventListener('click',e=>{const button=e.currentTarget;button.textContent='写真フォルダを開く（デモ）';setTimeout(()=>button.textContent='＋ 写真を追加',1600)});
 
+const imageConfirm=document.querySelector('#imageConfirm');
+const replacePhotoButton=document.querySelector('.replace-photo-demo');
+const imageExample=document.querySelector('.image-example');
+replacePhotoButton?.addEventListener('click',()=>{imageConfirm.hidden=false;imageConfirm.querySelector('button')?.focus()});
+imageConfirm?.addEventListener('click',e=>{
+  const answer=e.target.closest('[data-image-answer]');
+  if(!answer)return;
+  const isWork=answer.dataset.imageAnswer==='work';
+  imageExample?.classList.toggle('confirmed-work',isWork);
+  imageExample?.querySelector('.image-note')?.toggleAttribute('hidden',isWork);
+  imageConfirm.hidden=true;
+  replacePhotoButton.textContent=isWork?'実績写真として確認済み ✓':'施工イメージとして確認済み ✓';
+  replacePhotoButton.focus();
+});
+
 const modal=document.querySelector('#templateModal');
 const modalImage=modal?.querySelector('img');
 const modalPlaceholder='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';

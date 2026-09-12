@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const dist = resolve(root, 'dist');
-const required = ['index.html', '404.html', 'terms/index.html', 'privacy/index.html', 'styles.css', 'site-config.js', 'script.js', 'favicon.svg', 'assets/hero-genba-home.png', 'assets/hero-genba-home.webp', 'CNAME', '.nojekyll', 'robots.txt', 'sitemap.xml'];
+const required = ['index.html', 'exterior/index.html', 'carport/index.html', '404.html', 'terms/index.html', 'privacy/index.html', 'styles.css', 'lp.css', 'site-config.js', 'script.js', 'favicon.svg', 'assets/hero-genba-home.png', 'assets/hero-genba-home.webp', 'CNAME', '.nojekyll', 'robots.txt', 'sitemap.xml'];
 
 for (const file of required) {
   if (!existsSync(resolve(root, file))) throw new Error(`Missing required file: ${file}`);
@@ -16,7 +16,7 @@ for (const image of html.matchAll(/(?:src|data-full)="(assets\/[^\"]+)"/g)) {
 
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
-for (const file of ['index.html', '404.html', 'terms', 'privacy', 'styles.css', 'site-config.js', 'script.js', 'favicon.svg', 'assets', 'CNAME', '.nojekyll', 'robots.txt', 'sitemap.xml']) {
+for (const file of ['index.html', 'exterior', 'carport', '404.html', 'terms', 'privacy', 'styles.css', 'lp.css', 'site-config.js', 'script.js', 'favicon.svg', 'assets', 'CNAME', '.nojekyll', 'robots.txt', 'sitemap.xml']) {
   cpSync(resolve(root, file), resolve(dist, file), { recursive: true });
 }
 

@@ -22,6 +22,8 @@ document.addEventListener('click',event=>{
     link_url:target.href||undefined,
     link_text:target.textContent.trim().replace(/\s+/g,' '),
     placement:target.dataset.gaLabel||undefined,
+    page_type:document.body.dataset.pageType||'home',
+    landing_page:document.body.dataset.landingPage||window.location.pathname,
   };
   window.gtag('event',eventName,eventParams);
 });
@@ -35,7 +37,7 @@ if(priceSection){
     const rect=priceSection.getBoundingClientRect();
     if(rect.top>window.innerHeight*.75||rect.bottom<0)return;
     priceViewed=true;
-    window.gtag('event','view_price',{placement:'price',section_id:'price'});
+    window.gtag('event','view_price',{placement:'price',section_id:'price',page_type:document.body.dataset.pageType||'home',landing_page:document.body.dataset.landingPage||window.location.pathname});
     priceObserver?.disconnect();
     window.removeEventListener('scroll',trackPriceView);
   };

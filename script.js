@@ -1,11 +1,15 @@
 const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_line','click_phone','click_email']);
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
+const pageContext={
+  page_type:document.body.dataset.pageType||'home',
+  landing_page:document.body.dataset.landingPage||window.location.pathname,
+};
 
 if(ga4MeasurementId){
   window.dataLayer=window.dataLayer||[];
   window.gtag=function(){window.dataLayer.push(arguments)};
   window.gtag('js',new Date());
-  window.gtag('config',ga4MeasurementId);
+  window.gtag('config',ga4MeasurementId,pageContext);
 
   const ga4Script=document.createElement('script');
   ga4Script.async=true;
@@ -22,8 +26,7 @@ document.addEventListener('click',event=>{
     link_url:target.href||undefined,
     link_text:target.textContent.trim().replace(/\s+/g,' '),
     placement:target.dataset.gaLabel||undefined,
-    page_type:document.body.dataset.pageType||'home',
-    landing_page:document.body.dataset.landingPage||window.location.pathname,
+    ...pageContext,
   };
   window.gtag('event',eventName,eventParams);
 });
@@ -37,7 +40,7 @@ if(priceSection){
     const rect=priceSection.getBoundingClientRect();
     if(rect.top>window.innerHeight*.75||rect.bottom<0)return;
     priceViewed=true;
-    window.gtag('event','view_price',{placement:'price',section_id:'price',page_type:document.body.dataset.pageType||'home',landing_page:document.body.dataset.landingPage||window.location.pathname});
+    window.gtag('event','view_price',{placement:'price',section_id:'price',...pageContext});
     priceObserver?.disconnect();
     window.removeEventListener('scroll',trackPriceView);
   };

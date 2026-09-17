@@ -26,6 +26,7 @@ document.addEventListener('click',event=>{
     link_url:target.href||undefined,
     link_text:target.textContent.trim().replace(/\s+/g,' '),
     placement:target.dataset.gaLabel||undefined,
+    site_name:target.dataset.gaSite||undefined,
     ...pageContext,
   };
   window.gtag('event',eventName,eventParams);

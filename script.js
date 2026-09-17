@@ -1,4 +1,4 @@
-const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_line','click_phone','click_email']);
+const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_line','click_phone','click_email','click_portfolio']);
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
 const pageContext={
   page_type:document.body.dataset.pageType||'home',

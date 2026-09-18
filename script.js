@@ -1,4 +1,4 @@
-const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_guide','click_line','click_phone','click_email','click_portfolio']);
+const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_guide','click_line','click_phone','click_email','click_portfolio','cweb_lp_view','cweb_lp_line_click','cweb_lp_portfolio_click','cweb_lp_guide_click','cweb_lp_price_view']);
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
 const pageContext={
   page_type:document.body.dataset.pageType||'home',
@@ -30,10 +30,16 @@ document.addEventListener('click',event=>{
     ...pageContext,
   };
   window.gtag('event',eventName,eventParams);
+  const secondaryEvent=target.dataset.gaSecondary;
+  if(secondaryEvent&&GA4_EVENT_NAMES.has(secondaryEvent))window.gtag('event',secondaryEvent,eventParams);
 });
 
+if(document.body.dataset.pageType==='cweb_ad_lp'&&window.gtag){
+  window.gtag('event','cweb_lp_view',{...pageContext});
+}
+
 const priceSection=document.querySelector('#price');
-if(priceSection){
+if(priceSection&&document.body.dataset.pageType!=='cweb_ad_lp'){
   let priceViewed=false;
   let priceObserver;
   const trackPriceView=()=>{
@@ -51,6 +57,19 @@ if(priceSection){
   }
   window.addEventListener('scroll',trackPriceView,{passive:true});
   requestAnimationFrame(trackPriceView);
+}
+
+const lpPriceSection=document.querySelector('[data-track-lp-price]');
+if(lpPriceSection){
+  let lpPriceViewed=false;
+  const trackLpPrice=entries=>{
+    if(lpPriceViewed||!window.gtag||!entries.some(entry=>entry.isIntersecting))return;
+    lpPriceViewed=true;
+    window.gtag('event','cweb_lp_price_view',{placement:'price',section_id:'price',...pageContext});
+    lpPriceObserver.disconnect();
+  };
+  const lpPriceObserver=new IntersectionObserver(trackLpPrice,{threshold:.25});
+  lpPriceObserver.observe(lpPriceSection);
 }
 
 const header=document.querySelector('.site-header');

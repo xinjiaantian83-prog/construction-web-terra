@@ -1,4 +1,6 @@
 window.SITE_CONFIG = Object.freeze({
   // GA4 Measurement ID（例: G-XXXXXXXXXX）。未設定時はGA4を読み込みません。
   ga4MeasurementId: 'G-X7JVZ5VBDD',
+  // C-WEB専用Meta Pixel ID。作成・確認後にここだけ設定します。
+  metaPixelId: '',
 });

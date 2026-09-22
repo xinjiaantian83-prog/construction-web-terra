@@ -1,5 +1,6 @@
 const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_guide','click_operation_guide_note','click_line','click_phone','click_email','click_portfolio','cweb_lp_view','cweb_lp_line_click','cweb_lp_portfolio_click','cweb_lp_guide_click','cweb_lp_price_view']);
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
+const metaPixelId=window.SITE_CONFIG?.metaPixelId?.trim();
 const pageContext={
   page_type:document.body.dataset.pageType||'home',
   landing_page:document.body.dataset.landingPage||window.location.pathname,
@@ -17,9 +18,24 @@ if(ga4MeasurementId){
   document.head.appendChild(ga4Script);
 }
 
+if(metaPixelId){
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+  (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  window.fbq('init',metaPixelId);
+  window.fbq('track','PageView');
+}
+
+const trackMeta=(eventName,params={},custom=false)=>{
+  if(!metaPixelId||!window.fbq)return;
+  window.fbq(custom?'trackCustom':'track',eventName,params);
+};
+
 document.addEventListener('click',event=>{
   const target=event.target.closest('[data-ga-event]');
-  if(!target||!window.gtag)return;
+  if(!target)return;
   const eventName=target.dataset.gaEvent;
   if(!GA4_EVENT_NAMES.has(eventName))return;
   const eventParams={
@@ -29,14 +45,19 @@ document.addEventListener('click',event=>{
     site_name:target.dataset.gaSite||undefined,
     ...pageContext,
   };
-  window.gtag('event',eventName,eventParams);
+  window.gtag?.('event',eventName,eventParams);
   const secondaryEvent=target.dataset.gaSecondary;
-  if(secondaryEvent&&GA4_EVENT_NAMES.has(secondaryEvent))window.gtag('event',secondaryEvent,eventParams);
+  if(secondaryEvent&&GA4_EVENT_NAMES.has(secondaryEvent))window.gtag?.('event',secondaryEvent,eventParams);
+  if(eventName==='cweb_lp_line_click'||eventName==='click_line'){
+    trackMeta('Contact',{...eventParams,contact_method:'line'});
+    trackMeta('CWebLineClick',{...eventParams,contact_method:'line'},true);
+  }
 });
 
 if(document.body.dataset.pageType==='cweb_ad_lp'&&window.gtag){
   window.gtag('event','cweb_lp_view',{...pageContext});
 }
+if(document.body.dataset.pageType==='cweb_ad_lp')trackMeta('CWebLPView',pageContext,true);
 
 const priceSection=document.querySelector('#price');
 if(priceSection&&document.body.dataset.pageType!=='cweb_ad_lp'){
@@ -63,9 +84,10 @@ const lpPriceSection=document.querySelector('[data-track-lp-price]');
 if(lpPriceSection){
   let lpPriceViewed=false;
   const trackLpPrice=entries=>{
-    if(lpPriceViewed||!window.gtag||!entries.some(entry=>entry.isIntersecting))return;
+    if(lpPriceViewed||(!window.gtag&&!metaPixelId)||!entries.some(entry=>entry.isIntersecting))return;
     lpPriceViewed=true;
-    window.gtag('event','cweb_lp_price_view',{placement:'price',section_id:'price',...pageContext});
+    window.gtag?.('event','cweb_lp_price_view',{placement:'price',section_id:'price',...pageContext});
+    trackMeta('CWebPriceView',{placement:'price',section_id:'price',...pageContext},true);
     lpPriceObserver.disconnect();
   };
   const lpPriceObserver=new IntersectionObserver(trackLpPrice,{threshold:.25});

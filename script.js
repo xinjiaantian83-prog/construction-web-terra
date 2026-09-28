@@ -1,4 +1,4 @@
-const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_guide','click_operation_guide_note','click_line','click_phone','click_email','click_portfolio','cweb_lp_view','cweb_lp_line_click','cweb_lp_portfolio_click','cweb_lp_guide_click','cweb_lp_price_view']);
+const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_guide','click_operation_guide_note','click_line','click_phone','click_email','click_portfolio','cweb_lp_view','cweb_lp_portfolio_click','cweb_lp_guide_click','cweb_lp_price_view']);
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
 const metaPixelId=window.SITE_CONFIG?.metaPixelId?.trim();
 const pageContext={
@@ -48,7 +48,7 @@ document.addEventListener('click',event=>{
   window.gtag?.('event',eventName,eventParams);
   const secondaryEvent=target.dataset.gaSecondary;
   if(secondaryEvent&&GA4_EVENT_NAMES.has(secondaryEvent))window.gtag?.('event',secondaryEvent,eventParams);
-  if(eventName==='cweb_lp_line_click'||eventName==='click_line'){
+  if(eventName==='click_line'){
     trackMeta('Contact',{...eventParams,contact_method:'line'});
     trackMeta('CWebLineClick',{...eventParams,contact_method:'line'},true);
   }

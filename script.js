@@ -1,16 +1,36 @@
 const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_guide','click_operation_guide_note','click_line','click_phone','click_email','click_portfolio','cweb_lp_view','cweb_lp_portfolio_click','cweb_lp_guide_click','cweb_lp_price_view']);
+const CANONICAL_INQUIRY_EVENTS={click_line:'line_inquiry_click',click_phone:'phone_click',click_email:'email_click'};
+const ATTRIBUTION_KEYS=['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','gbraid','wbraid'];
+const debugMode=new URLSearchParams(location.search).get('ga_debug')==='1';
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
 const metaPixelId=window.SITE_CONFIG?.metaPixelId?.trim();
 const pageContext={
   page_type:document.body.dataset.pageType||'home',
   landing_page:document.body.dataset.landingPage||window.location.pathname,
 };
+let attribution={};
+try{attribution=JSON.parse(sessionStorage.getItem('cweb_attribution')||'{}')}catch(_){attribution={}}
+const currentParams=new URLSearchParams(location.search);
+let attributionChanged=false;
+ATTRIBUTION_KEYS.forEach(key=>{const value=currentParams.get(key);if(value){attribution[key]=value;attributionChanged=true}});
+if(attributionChanged)sessionStorage.setItem('cweb_attribution',JSON.stringify(attribution));
+const attributionContext={
+  traffic_source:attribution.utm_source||undefined,
+  traffic_medium:attribution.utm_medium||undefined,
+  traffic_campaign:attribution.utm_campaign||undefined,
+  traffic_term:attribution.utm_term||undefined,
+  traffic_content:attribution.utm_content||undefined,
+  google_click_id:attribution.gclid||undefined,
+  google_braid:attribution.gbraid||undefined,
+  google_wbraid:attribution.wbraid||undefined,
+  is_test_event:debugMode||undefined,
+};
 
 if(ga4MeasurementId){
   window.dataLayer=window.dataLayer||[];
   window.gtag=function(){window.dataLayer.push(arguments)};
   window.gtag('js',new Date());
-  window.gtag('config',ga4MeasurementId,pageContext);
+  window.gtag('config',ga4MeasurementId,{...pageContext,debug_mode:debugMode});
 
   const ga4Script=document.createElement('script');
   ga4Script.async=true;
@@ -33,6 +53,16 @@ const trackMeta=(eventName,params={},custom=false)=>{
   window.fbq(custom?'trackCustom':'track',eventName,params);
 };
 
+const trackGa4=(eventName,params={})=>{
+  if(!window.gtag)return;
+  const payload={...pageContext,...attributionContext,...params};
+  window.gtag('event',eventName,payload);
+  if(debugMode){
+    window.__trackingAudit=window.__trackingAudit||[];
+    window.__trackingAudit.push({event:eventName,params:payload});
+  }
+};
+
 document.addEventListener('click',event=>{
   const target=event.target.closest('[data-ga-event]');
   if(!target)return;
@@ -45,18 +75,16 @@ document.addEventListener('click',event=>{
     site_name:target.dataset.gaSite||undefined,
     ...pageContext,
   };
-  window.gtag?.('event',eventName,eventParams);
+  trackGa4(CANONICAL_INQUIRY_EVENTS[eventName]||eventName,eventParams);
   const secondaryEvent=target.dataset.gaSecondary;
-  if(secondaryEvent&&GA4_EVENT_NAMES.has(secondaryEvent))window.gtag?.('event',secondaryEvent,eventParams);
+  if(secondaryEvent&&GA4_EVENT_NAMES.has(secondaryEvent))trackGa4(secondaryEvent,eventParams);
   if(eventName==='click_line'){
     trackMeta('Contact',{...eventParams,contact_method:'line'});
     trackMeta('CWebLineClick',{...eventParams,contact_method:'line'},true);
   }
 });
 
-if(document.body.dataset.pageType==='cweb_ad_lp'&&window.gtag){
-  window.gtag('event','cweb_lp_view',{...pageContext});
-}
+if(document.body.dataset.pageType==='cweb_ad_lp'&&window.gtag)trackGa4('cweb_lp_view');
 if(document.body.dataset.pageType==='cweb_ad_lp')trackMeta('CWebLPView',pageContext,true);
 
 const priceSection=document.querySelector('#price');
@@ -68,7 +96,7 @@ if(priceSection&&document.body.dataset.pageType!=='cweb_ad_lp'){
     const rect=priceSection.getBoundingClientRect();
     if(rect.top>window.innerHeight*.75||rect.bottom<0)return;
     priceViewed=true;
-    window.gtag('event','view_price',{placement:'price',section_id:'price',...pageContext});
+    trackGa4('view_price',{placement:'price',section_id:'price'});
     priceObserver?.disconnect();
     window.removeEventListener('scroll',trackPriceView);
   };
@@ -86,7 +114,7 @@ if(lpPriceSection){
   const trackLpPrice=entries=>{
     if(lpPriceViewed||(!window.gtag&&!metaPixelId)||!entries.some(entry=>entry.isIntersecting))return;
     lpPriceViewed=true;
-    window.gtag?.('event','cweb_lp_price_view',{placement:'price',section_id:'price',...pageContext});
+    trackGa4('cweb_lp_price_view',{placement:'price',section_id:'price'});
     trackMeta('CWebPriceView',{placement:'price',section_id:'price',...pageContext},true);
     lpPriceObserver.disconnect();
   };

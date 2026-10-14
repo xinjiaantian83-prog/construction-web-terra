@@ -1,5 +1,4 @@
 const GA4_EVENT_NAMES=new Set(['view_price','click_plan','click_contact','click_demo','click_blog','click_guide','click_operation_guide_note','click_line','click_phone','click_email','click_portfolio','cweb_lp_view','cweb_lp_portfolio_click','cweb_lp_guide_click','cweb_lp_price_view']);
-const CANONICAL_INQUIRY_EVENTS={click_line:'line_inquiry_click',click_phone:'phone_click',click_email:'email_click'};
 const ATTRIBUTION_KEYS=['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','gbraid','wbraid'];
 const debugMode=new URLSearchParams(location.search).get('ga_debug')==='1';
 const ga4MeasurementId=window.SITE_CONFIG?.ga4MeasurementId?.trim();
@@ -38,7 +37,10 @@ if(ga4MeasurementId){
   document.head.appendChild(ga4Script);
 }
 
-if(metaPixelId){
+let metaPixelStarted=false;
+const startMetaPixel=()=>{
+  if(!metaPixelId||metaPixelStarted)return;
+  metaPixelStarted=true;
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
   n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
@@ -46,10 +48,17 @@ if(metaPixelId){
   (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   window.fbq('init',metaPixelId);
   window.fbq('track','PageView');
+  if(document.body.dataset.pageType==='cweb_ad_lp')window.fbq('trackCustom','CWebLPView',pageContext);
+};
+if(metaPixelId){
+  if('requestIdleCallback' in window)window.requestIdleCallback(startMetaPixel,{timeout:3000});
+  else window.setTimeout(startMetaPixel,2500);
 }
 
 const trackMeta=(eventName,params={},custom=false)=>{
-  if(!metaPixelId||!window.fbq)return;
+  if(!metaPixelId)return;
+  startMetaPixel();
+  if(!window.fbq)return;
   window.fbq(custom?'trackCustom':'track',eventName,params);
 };
 
@@ -75,7 +84,7 @@ document.addEventListener('click',event=>{
     site_name:target.dataset.gaSite||undefined,
     ...pageContext,
   };
-  trackGa4(CANONICAL_INQUIRY_EVENTS[eventName]||eventName,eventParams);
+  trackGa4(eventName,{...eventParams,event_scope:eventName.startsWith('click_')?'micro_conversion':undefined});
   const secondaryEvent=target.dataset.gaSecondary;
   if(secondaryEvent&&GA4_EVENT_NAMES.has(secondaryEvent))trackGa4(secondaryEvent,eventParams);
   if(eventName==='click_line'){
@@ -85,7 +94,6 @@ document.addEventListener('click',event=>{
 });
 
 if(document.body.dataset.pageType==='cweb_ad_lp'&&window.gtag)trackGa4('cweb_lp_view');
-if(document.body.dataset.pageType==='cweb_ad_lp')trackMeta('CWebLPView',pageContext,true);
 
 const priceSection=document.querySelector('#price');
 if(priceSection&&document.body.dataset.pageType!=='cweb_ad_lp'){

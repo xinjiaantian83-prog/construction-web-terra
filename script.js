@@ -31,10 +31,15 @@ if(ga4MeasurementId){
   window.gtag('js',new Date());
   window.gtag('config',ga4MeasurementId,{...pageContext,debug_mode:debugMode});
 
-  const ga4Script=document.createElement('script');
-  ga4Script.async=true;
-  ga4Script.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4MeasurementId)}`;
-  document.head.appendChild(ga4Script);
+  const loadGa4=()=>{
+    if(document.querySelector('script[data-cweb-ga4]'))return;
+    const ga4Script=document.createElement('script');
+    ga4Script.async=true;
+    ga4Script.dataset.cwebGa4='';
+    ga4Script.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4MeasurementId)}`;
+    document.head.appendChild(ga4Script);
+  };
+  window.addEventListener('load',()=>window.setTimeout(loadGa4,1200),{once:true});
 }
 
 let metaPixelStarted=false;
@@ -51,8 +56,10 @@ const startMetaPixel=()=>{
   if(document.body.dataset.pageType==='cweb_ad_lp')window.fbq('trackCustom','CWebLPView',pageContext);
 };
 if(metaPixelId){
-  if('requestIdleCallback' in window)window.requestIdleCallback(startMetaPixel,{timeout:3000});
-  else window.setTimeout(startMetaPixel,2500);
+  window.addEventListener('load',()=>{
+    if('requestIdleCallback' in window)window.requestIdleCallback(startMetaPixel,{timeout:4000});
+    else window.setTimeout(startMetaPixel,3500);
+  },{once:true});
 }
 
 const trackMeta=(eventName,params={},custom=false)=>{
